@@ -12,6 +12,9 @@
         android:layout_height="40dp"
         android:id="@+id/load_1"
         android:text="加载大图"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <com.example.studyandtestapp.CustomView.LargeImageView
         android:layout_below="@id/load_1"
         android:layout_width="wrap_content"
@@ -19,5 +22,5 @@
         android:id="@+id/large_image">
 
     </com.example.studyandtestapp.CustomView.LargeImageView>
-
+    </ScrollView>
 </RelativeLayout>
