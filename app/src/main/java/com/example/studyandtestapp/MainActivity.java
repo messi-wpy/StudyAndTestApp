@@ -24,4 +24,5 @@ public class MainActivity extends AppCompatActivity {
                 .add(R.id.fragment_layout,new Mainfragment(),"main")
                 .commit();
     }
+
 }
