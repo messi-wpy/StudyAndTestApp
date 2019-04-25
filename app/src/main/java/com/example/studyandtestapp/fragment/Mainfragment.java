@@ -44,11 +44,13 @@ public class Mainfragment extends BaseFragment {
                if (fragmentManager.findFragmentByTag("fragment"+position)==null){
                    CommonFragment fragment=CommonFragment.newInstance(String.valueOf(position));
                    FragmentTransaction transaction=fragmentManager.beginTransaction();
-                   transaction
-                           .add(R.id.main_fragment_contain,fragment,"fragment"+position);
                    if (position==7){
-                    transaction
+                       transaction
+                               .replace(R.id.main_fragment_contain, fragment, "fragment" + position)
                                .addToBackStack("name");
+                   }else {
+                       transaction
+                               .add(R.id.main_fragment_contain, fragment, "fragment" + position);
                    }
                    transaction
                            .commit();
