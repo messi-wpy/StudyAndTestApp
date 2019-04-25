@@ -13,6 +13,7 @@ import com.example.studyandtestapp.adapter.MainRecycleviewAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -35,7 +36,7 @@ public class Mainfragment extends BaseFragment {
         button=view.findViewById(R.id.bt_back);
 
         button.setOnClickListener(v -> {
-            fragmentManager.popBackStack();
+        fragmentManager.popBackStack();
 
         });
         recyclerView.setAdapter(new MainRecycleviewAdapter(new MainRecycleviewAdapter.onItemClickPresenter() {
@@ -57,9 +58,16 @@ public class Mainfragment extends BaseFragment {
                 if (fragmentManager.findFragmentById(R.id.main_fragment_contain)!=null)
                    Log.i(TAG, "click: "+fragmentManager.findFragmentById(R.id.main_fragment_contain).getClass().getSimpleName());
                }else {
-                   fragmentManager.beginTransaction()
-                           .remove(fragmentManager.findFragmentByTag("fragment"+position))
-                           .commit();
+                   Fragment fragment=fragmentManager.findFragmentByTag("fragment"+position);
+                   if (fragment.isHidden()||fragment.isVisible()) {
+                       fragmentManager.beginTransaction()
+                               .show(fragment)
+                               .commit();
+                   }else {
+                       fragmentManager.beginTransaction()
+                               .hide(fragment)
+                               .commit();
+                   }
 
                }
             }
