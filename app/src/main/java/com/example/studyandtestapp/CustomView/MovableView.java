@@ -51,6 +51,9 @@ public class MovableView extends View {
         int x=(int) event.getX();
         int y=(int)event.getY();
         switch (event.getAction()){
+            case MotionEvent.ACTION_UP:
+                performClick();
+                break;
             case MotionEvent.ACTION_DOWN:
                 lastX=x;
                 lastY=y;
@@ -60,8 +63,11 @@ public class MovableView extends View {
                 int moveY=y-lastY;
                 //调用layout来调整位置
                 //layout(getLeft()+moveX,getTop()+moveY,getRight()+moveX,getBottom()+moveY);
-                offsetLeftAndRight(moveX);
-                offsetTopAndBottom(moveY);
+
+
+                // offsetLeftAndRight(moveX);
+                //offsetTopAndBottom(moveY);
+                super.scrollBy(-moveX,-moveX);
                 break;
         }
 
