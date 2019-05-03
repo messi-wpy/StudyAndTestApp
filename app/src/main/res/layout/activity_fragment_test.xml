@@ -11,8 +11,10 @@
         android:layout_height="wrap_content"
         android:text="Main Activity"
         android:textSize="30dp"/>
-    <FrameLayout
-        android:id="@+id/fragment_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <com.example.studyandtestapp.CustomView.MovableView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@android:color/holo_red_light"
+
+        />
 </LinearLayout>
