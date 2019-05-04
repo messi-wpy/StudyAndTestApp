@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.example.studyandtestapp.CustomView.ItemLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="50dp">
 
     <TextView
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/item_text"
         android:layout_width="match_parent"
-        android:layout_height="30dp" />
+        android:layout_height="match_parent" />
 
     <TextView
+        android:background="@android:color/holo_red_light"
+        android:text="删除"
+        android:textSize="25dp"
         android:layout_width="100dp"
-        android:layout_height="30dp" />
-</LinearLayout>
+        android:layout_height="match_parent" />
+</com.example.studyandtestapp.CustomView.ItemLinearLayout>

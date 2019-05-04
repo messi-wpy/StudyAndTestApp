@@ -56,7 +56,8 @@ public class MovableView extends View {
         int y=(int)event.getY();
         switch (event.getAction()){
             case MotionEvent.ACTION_UP:
-               // performClick();
+                if (Math.abs(x-lastX)<=3&&Math.abs(y-lastY)<=3)
+                    performClick();
                 break;
             case MotionEvent.ACTION_DOWN:
                 lastX=x;

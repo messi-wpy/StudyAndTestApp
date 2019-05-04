@@ -6,8 +6,11 @@ import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+import com.example.studyandtestapp.CustomView.ItemLinearLayout;
 import com.example.studyandtestapp.CustomView.LargeImageView;
 import com.example.studyandtestapp.CustomView.MovableView;
 import com.example.studyandtestapp.fragment.Mainfragment;
@@ -27,17 +30,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment_test);
         movableView=findViewById(R.id.move);
-
         movableView.setOnClickListener(v->{
-            Log.i(TAG, "onCreate:  onclick" );
-            /*属性动画
-            ObjectAnimator.ofFloat(movableView,"translationX",0,300)
-                            .setDuration(1000)
-                            .start();
-            */
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.content,new Mainfragment())
+                    .commit();
 
-            movableView.smoothcrollTo(-400,0);
         });
+
     }
 
 }
