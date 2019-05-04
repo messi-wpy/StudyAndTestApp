@@ -4,8 +4,10 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Scroller;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -14,12 +16,14 @@ public class MovableView extends View {
 
     private  int  lastX;
     private  int lastY;
+    private Scroller mScroller;
     public MovableView(Context context) {
         super(context);
     }
 
     public MovableView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        mScroller=new Scroller(context);
     }
 
     public MovableView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
@@ -52,7 +56,7 @@ public class MovableView extends View {
         int y=(int)event.getY();
         switch (event.getAction()){
             case MotionEvent.ACTION_UP:
-                performClick();
+               // performClick();
                 break;
             case MotionEvent.ACTION_DOWN:
                 lastX=x;
@@ -62,17 +66,33 @@ public class MovableView extends View {
                 int moveX=x-lastX;
                 int moveY=y-lastY;
                 //调用layout来调整位置
-                //layout(getLeft()+moveX,getTop()+moveY,getRight()+moveX,getBottom()+moveY);
+                layout(getLeft()+moveX,getTop()+moveY,getRight()+moveX,getBottom()+moveY);
 
-
+                Log.i("tag", "onTouchEvent: "+x+"   "+y+"  "+lastX+"  "+lastY);
                 // offsetLeftAndRight(moveX);
                 //offsetTopAndBottom(moveY);
-                super.scrollBy(-moveX,-moveX);
+                //((View)getParent()).scrollBy(-moveX,-moveY);
                 break;
         }
 
 
-
         return true;
+    }
+    @Override
+    public void computeScroll(){
+        super.computeScroll();
+        if (mScroller.computeScrollOffset()){
+            ((View)getParent()).scrollTo(mScroller.getCurrX(),mScroller.getCurrY());
+            invalidate();
+        }
+
+    }
+
+    public void smoothcrollTo(int destX,int destY){
+        int scrollX=getScrollX();
+        int delta=destX-scrollX;
+        mScroller.startScroll(scrollX,0,delta,0,2000);
+        invalidate();
+
     }
 }

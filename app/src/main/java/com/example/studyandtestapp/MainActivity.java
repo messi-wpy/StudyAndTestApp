@@ -30,9 +30,13 @@ public class MainActivity extends AppCompatActivity {
 
         movableView.setOnClickListener(v->{
             Log.i(TAG, "onCreate:  onclick" );
+            /*属性动画
             ObjectAnimator.ofFloat(movableView,"translationX",0,300)
                             .setDuration(1000)
                             .start();
+            */
+
+            movableView.smoothcrollTo(-400,0);
         });
     }
 
