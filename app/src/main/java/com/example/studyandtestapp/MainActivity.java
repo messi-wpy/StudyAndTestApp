@@ -6,6 +6,7 @@ import android.widget.Button;
 
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.example.studyandtestapp.CustomView.LargeImageView;
+import com.example.studyandtestapp.fragment.Mainfragment;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,31 +19,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        //largeImageView=findViewById(R.id.large_image);
-       largeImageView=findViewById(R.id.large_image);
-        start_bt=findViewById(R.id.load_1);
-       /* start_bt.setOnClickListener(v -> {
-        imageView.setImage(ImageSource.asset("calander.png"));
-
-        });*/
-
-
-        start_bt.setOnClickListener(v->{
-            try {
-                String[] files=getAssets().list("");
-                InputStream in=getAssets().open(files[0]);
-                largeImageView.setFitXY(true)
-                                .setImage(in);
-                //Bitmap bmp=BitmapFactory.decodeStream(in);
-                //9.4M 全部加载,也证明了图片占用内存= 分辨率*一个像素点占的内存（ARGB--4,RGB---3）
-                //imageView.setImageBitmap(bmp);
-                //Log.i("TAG", "onCreate: "+bmp.getByteCount());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
-        });
+        setContentView(R.layout.activity_fragment_test);
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragment_layout,new Mainfragment(),"main")
+                .commit();
     }
+
 }

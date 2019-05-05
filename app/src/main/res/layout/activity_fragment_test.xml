@@ -6,6 +6,11 @@
     android:layout_height="match_parent">
 
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Main Activity"
+        android:textSize="30dp"/>
     <FrameLayout
         android:id="@+id/fragment_layout"
         android:layout_width="match_parent"
