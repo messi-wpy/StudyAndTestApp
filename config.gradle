@@ -11,7 +11,7 @@ ext{
     ]
 
      dependences = [
-        okhttp:'com.squareup.okhttp3:okhttp:3.14.1',
+        okhttp:'com.squareup.okhttp3:okhttp:3.12.1',
         retrofit:"com.squareup.retrofit2:retrofit:2.5.0",
         Gson:'com.google.code.gson:gson:2.8.5'
 
