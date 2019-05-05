@@ -1,11 +1,20 @@
 package com.example.studyandtestapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+
+import com.example.studyandtestapp.CustomView.ItemLinearLayout;
+import com.example.studyandtestapp.CustomView.LargeImageView;
+import com.example.studyandtestapp.CustomView.MovableView;
+
 import com.example.myretrofit.NetCallback;
 import com.example.myretrofit.RestService;
 import com.example.studyandtestapp.CustomView.LargeImageView;

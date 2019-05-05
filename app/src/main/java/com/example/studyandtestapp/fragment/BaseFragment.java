@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import java.security.PublicKey;
+
 public class BaseFragment extends Fragment {
 
     public static final  String TAG="Fragment";
@@ -84,4 +86,11 @@ public class BaseFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Log.i(TAG, "-----------onViewCreated: "+name);
     }
+    @Override
+    public  void onResume(){
+        super.onResume();
+        Log.i(TAG, "---------------onResume: "+name);
+    }
+
+
 }
