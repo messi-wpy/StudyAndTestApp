@@ -1,0 +1,24 @@
+ext{
+
+     versionname="1.0.0"
+     version=[
+            applicationId :"com.example.studyandtestapp",
+            min_Sdk :19,
+            target_Sdk: 28,
+            buildToolsVersion :'28.0.3',
+            compileSdkVersion :28,
+            java:JavaVersion.VERSION_1_8
+    ]
+
+     dependences = [
+        okhttp:'com.squareup.okhttp3:okhttp:3.14.1',
+        retrofit:"com.squareup.retrofit2:retrofit:2.5.0",
+        Gson:'com.google.code.gson:gson:2.8.5'
+
+
+
+     ]
+
+
+
+}
