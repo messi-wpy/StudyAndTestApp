@@ -27,6 +27,7 @@ public class CommonFragment extends BaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+
         View view=inflater.inflate(R.layout.fragment_common,container,false);
         TextView textView=view.findViewById(R.id.fragment_text);
         textView.setText(getArguments().getString("name"));
