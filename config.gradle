@@ -13,7 +13,8 @@ ext{
      dependences = [
         okhttp:'com.squareup.okhttp3:okhttp:3.12.1',
         retrofit:"com.squareup.retrofit2:retrofit:2.5.0",
-        Gson:'com.google.code.gson:gson:2.8.5'
+        Gson:'com.google.code.gson:gson:2.8.5',
+        okhttplog :'com.squareup.okhttp3:logging-interceptor:3.10.0'
 
 
 
