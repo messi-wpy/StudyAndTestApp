@@ -12,7 +12,7 @@
         android:text="Main Activity"
         android:textSize="30dp"/>
     <com.example.studyandtestapp.CustomView.MovableView
-        android:id="@+id/move"
+        android:id="@+id/move_view"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:background="@android:color/holo_red_light" />

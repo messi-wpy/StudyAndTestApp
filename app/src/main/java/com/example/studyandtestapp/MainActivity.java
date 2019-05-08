@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment_test);
-        movableView=findViewById(R.id.move);
+        movableView=findViewById(R.id.move_view);
         movableView.setOnClickListener(v->{
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content,new Mainfragment())
