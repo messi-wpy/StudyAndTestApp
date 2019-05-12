@@ -19,7 +19,21 @@ public class GetScorsePresenter {
     }
 
     //登录教务处获取cookie
+    public void LoginJWC(){
+        clientWithRetrofit.firstLogin()
+                          .subscribeOn(Schedulers.io())
+                          .flatMap(new Func1<ResponseBody, Observable<ResponseBody>>() {
+                              @Override
+                              public Observable<ResponseBody> call(ResponseBody responseBody) {
 
+                                  return clientWithRetrofit.performCampusLogin();
+                              }
+                          })
+
+
+    }
+
+    public void getWordFromHtml(){}
 
 
 
