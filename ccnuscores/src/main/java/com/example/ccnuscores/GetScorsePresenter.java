@@ -55,7 +55,14 @@ public class GetScorsePresenter {
 
                                   return clientWithRetrofit.performCampusLogin(valueOfcookie,"2017212163","13569158099",params[0],params[1],"submit","登录");
                               }
-                          }).subscribe(new Subscriber<ResponseBody>() {
+                          }).flatMap(new Func1<ResponseBody, Observable<ResponseBody>>() {
+            @Override
+            public Observable<ResponseBody> call(ResponseBody responseBody) {
+                //todo 完善错误处理
+
+                return clientWithRetrofit.performSystemLogin();
+            }
+        }).subscribe(new Subscriber<ResponseBody>() {
             @Override
             public void onCompleted() {
                 Log.i(TAG, "onCompleted: ");
@@ -76,11 +83,7 @@ public class GetScorsePresenter {
 
             @Override
             public void onNext(ResponseBody responseBody) {
-                try {
-                    Log.d(TAG, "onNext: "+responseBody.string());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                Log.i(TAG, "onNext: "+"login success");
             }
         });
 
