@@ -18,6 +18,7 @@ public class SingleRetrofit {
                             .setLevel(HttpLoggingInterceptor.Level.BODY);
                     OkHttpClient okHttpClient = new OkHttpClient.Builder()
                             .cookieJar(new MyCookieJar())
+                            .addInterceptor(new AddHeadInterceptor())
                             .addInterceptor(interceptor)
                             .build();
 
@@ -25,6 +26,7 @@ public class SingleRetrofit {
                             .client(okHttpClient)
                             .addConverterFactory(GsonConverterFactory.create())
                             .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                            .baseUrl("http://xk.ccnu.edu.cn/")
                             .build();
                 }
             }
