@@ -2,6 +2,7 @@ package com.example.ccnuscores;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -26,5 +27,5 @@ public interface CcnuServices {
 
     //account.ccnu.edu.cn 先从这个进行统一身份认证
     @GET("https://account.ccnu.edu.cn/cas/login")
-    Observable<ResponseBody>firstLogin();
+    Observable<Response<ResponseBody>>firstLogin();
 }
