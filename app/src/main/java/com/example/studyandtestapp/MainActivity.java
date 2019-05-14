@@ -14,14 +14,33 @@ import com.example.ccnuscores.GetScorsePresenter;
 import com.example.studyandtestapp.CustomView.ItemLinearLayout;
 import com.example.studyandtestapp.CustomView.LargeImageView;
 import com.example.studyandtestapp.CustomView.MovableView;
+
+
+import com.example.myretrofit.NetCallback;
+import com.example.myretrofit.RestService;
+import com.example.studyandtestapp.CustomView.LargeImageView;
+import com.example.studyandtestapp.Net.NetRestService;
+import com.example.studyandtestapp.data.Email;
+
 import com.example.studyandtestapp.fragment.Mainfragment;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
+
 
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -87,6 +106,22 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG, "onNext: ");
             }
         });
+
+        Email email=new Email();
+        email.setEmail("904315105@qq.com");
+        restService.createService(NetRestService.class)
+                .postEmail(email)
+                .enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.i(RestService.TAG, "onFailure: ");
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        Log.i(RestService.TAG, "onResponse: post success");
+                    }
+                });
 
     }
 }
