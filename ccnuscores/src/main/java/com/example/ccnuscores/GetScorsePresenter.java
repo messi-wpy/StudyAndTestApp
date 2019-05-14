@@ -1,5 +1,6 @@
 package com.example.ccnuscores;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Scroller;
 
@@ -64,7 +65,8 @@ public class GetScorsePresenter {
                                   String[]params=null;
                                   try {
                                     params= getWordFromHtml(response.body().string());
-                                  } catch (IOException e) {
+                                      Log.i(TAG, "call: regex get param from html:" + params[0]+"  "+params[1]);
+                                  } catch (Exception e) {
                                       e.printStackTrace();
                                       return Observable.error(e);
                                   }
@@ -77,7 +79,7 @@ public class GetScorsePresenter {
             @Override
             public Observable<ResponseBody> call(ResponseBody responseBody) {
                 //todo 完善错误处理
-
+                Log.i(TAG, "call: first 学校系统登录完成，下一步进行教务处登录验证");
                 return clientWithRetrofit.performSystemLogin();
             }
         }).subscribe(new Subscriber<ResponseBody>() {
@@ -148,7 +150,9 @@ public class GetScorsePresenter {
      * @param html
      * @return string[] length=2,string[0]=lt,string[1]=execution
      */
-    private String [] getWordFromHtml(String html){
+    private String [] getWordFromHtml(String html) throws NullPointerException{
+        if (TextUtils.isEmpty(html))
+            throw new NullPointerException("first login html==null");
         String[] res=new String[2];
         Pattern ltPattern=Pattern.compile("name=\"lt\" value=\"(.+?)\" />");
         Pattern executionP=Pattern.compile("name=\"execution\" value=\"(.+?)\"");
