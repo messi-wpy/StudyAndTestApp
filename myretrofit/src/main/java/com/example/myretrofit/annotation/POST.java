@@ -1,4 +1,4 @@
-package com.example.myretrofit;
+package com.example.myretrofit.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface GET {
+public @interface POST {
     String value();
 }

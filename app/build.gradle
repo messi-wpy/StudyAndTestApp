@@ -46,6 +46,6 @@ dependencies {
      implementation dependences.okhttp
     implementation dependences.Gson
     implementation dependences.rxjava
-
+    implementation dependences.okhttplog
 
 }
