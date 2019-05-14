@@ -10,23 +10,28 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
-
+import com.example.ccnuscores.GetScorsePresenter;
 import com.example.studyandtestapp.CustomView.ItemLinearLayout;
 import com.example.studyandtestapp.CustomView.LargeImageView;
 import com.example.studyandtestapp.CustomView.MovableView;
+
 
 import com.example.myretrofit.NetCallback;
 import com.example.myretrofit.RestService;
 import com.example.studyandtestapp.CustomView.LargeImageView;
 import com.example.studyandtestapp.Net.NetRestService;
 import com.example.studyandtestapp.data.Email;
+
 import com.example.studyandtestapp.fragment.Mainfragment;
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
+
+
+import rx.Observable;
+import rx.Subscriber;
+import rx.functions.Func1;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -42,45 +47,63 @@ public class MainActivity extends AppCompatActivity {
     private LargeImageView largeImageView;
     private SubsamplingScaleImageView imageView;
     private Button start_bt;
-    private RestService restService;
-    private static Gson gson=new Gson();
+    private final static String TAG = "Main";
+    private MovableView movableView;
+    private GetScorsePresenter scorsePresenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        start_bt=findViewById(R.id.load_1);
-        start_bt.setText("get");
-        start_bt.setOnClickListener(v->{
-            getRequestTest();
+        setContentView(R.layout.activity_fragment_test);
+        movableView = findViewById(R.id.move_view);
+        movableView.setOnClickListener(v -> {
+            if (scorsePresenter==null)
+                scorsePresenter=new GetScorsePresenter();
+            scorsePresenter.LoginJWC();
+
         });
 
     }
 
-    public void getRequestTest(){
-        if (restService==null) {
-            HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .addInterceptor(interceptor)
-                    .build();
-            restService = new RestService.Builder()
-                    .setClient(client)
-                    .build();
 
-        }
+    public void rxjavaTest(){
+        Observable.just("hello")
+                .flatMap(new Func1<String, Observable<?>>() {
+                    @Override
+                    public Observable<?> call(String s) {
+                        Log.i(TAG, "call: flatmap  -----1");
+                        s = "hellp flapmap1";
+                        if (s != null)
+                            return Observable.error(new NullPointerException("null test"));
+                        return Observable.just(s);
+                    }
+                }).flatMap(new Func1<Object, Observable<?>>() {
 
-        restService.createService(NetRestService.class)
-                .gettest()
-                .enqueue(new Callback() {
+
             @Override
-            public void onFailure(Call call, IOException e) {
+            public Observable<?> call(Object o) {
+                Log.i(TAG, "call: flatmap-----2");
+                return Observable.just("33333");
+            }
 
+        }).subscribe(new Subscriber<Object>() {
+
+
+            @Override
+            public void onCompleted() {
+                Log.i(TAG, "onCompleted: ");
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.i(RestService.TAG, "onResponse: success");
-                //...gson解析数据
+            public void onError(Throwable e) {
+                Log.i(TAG, "onError: call");
+                if (e instanceof NullPointerException)
+                    Log.i(TAG, "onError: illegal   " + e.getMessage());
+            }
+
+            @Override
+            public void onNext(Object o) {
+                Log.i(TAG, "onNext: ");
             }
         });
 
@@ -101,5 +124,4 @@ public class MainActivity extends AppCompatActivity {
                 });
 
     }
-
 }

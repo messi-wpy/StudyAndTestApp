@@ -28,7 +28,7 @@ android {
 dependencies {
     def lifecycle_version = "2.0.0"
     implementation project(":myretrofit")
-
+    implementation project(":ccnuscores")
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -45,5 +45,7 @@ dependencies {
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
      implementation dependences.okhttp
     implementation dependences.Gson
+    implementation dependences.rxjava
     implementation dependences.okhttplog
+
 }
