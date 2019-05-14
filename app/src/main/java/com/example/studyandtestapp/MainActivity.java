@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.Date;
 
 import okhttp3.ResponseBody;
+import retrofit2.HttpException;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -34,10 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private Button start_bt;
     private final static String TAG = "Main";
     private MovableView movableView;
-    private static GetScorsePresenter scorsePresenter;
-    private Subscription loginSubscription;
-    private Date date=new Date();
-    private int time=0;
+    private GetScorsePresenter scorsePresenter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,50 +44,43 @@ public class MainActivity extends AppCompatActivity {
         if (scorsePresenter==null)
             scorsePresenter=new GetScorsePresenter();
         if (!scorsePresenter.isLogined())
-            loginSubscription=scorsePresenter.LoginJWC();
+            scorsePresenter.LoginJWC();
         movableView.setOnClickListener(v -> {
-            Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
-                @Override
-                public void call(Subscriber<? super String> subscriber) {
-                    while (!loginSubscription.isUnsubscribed()){
-                        Log.i(TAG, "call: wait");
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+          scorsePresenter.getScores(new Subscriber<ResponseBody>() {
+              @Override
+              public void onCompleted() {
+                  Log.i(TAG, "onCompleted: getscores");
 
-                    }
-                    subscriber.onNext("start");
-                }
-            }).subscribeOn(Schedulers.newThread())
-                    .flatMap(new Func1<String, Observable<ResponseBody>>() {
-                        @Override
-                        public Observable<ResponseBody> call(String s) {
-                            return scorsePresenter.getClientWithRetrofit().getScores("2018","3",false,String.valueOf(date.getTime()),15,1,"","asc", time);
-                        }
-                    }).subscribe(new Subscriber<ResponseBody>() {
-                @Override
-                public void onCompleted() {
-                    Log.i(TAG, "onCompleted: getscores");
-                }
+              }
 
-                @Override
-                public void onError(Throwable e) {
-                    Log.i(TAG, "onError: getscores error");
-                }
+              @Override
+              public void onError(Throwable e) {
+                  Log.e(TAG, "onError: getscores error");
+                  if (e instanceof HttpException){
+                      Log.e(TAG, "onError: HttpException "+((HttpException)e).response().code());
 
-                @Override
-                public void onNext(ResponseBody responseBody) {
-                    Log.i(TAG, "onNext: get");
-                }
-            });
+                  }
+
+              }
+
+              @Override
+              public void onNext(ResponseBody responseBody) {
+                  Log.i(TAG, "onNext: get");
+                  scorsePresenter.addTime();
+              }
+          });
 
         });
 
     }
 
 
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        scorsePresenter.unsubscription();
+
+    }
     public void rxjavaTest(){
         Observable.just("hello")
                 .flatMap(new Func1<String, Observable<?>>() {
@@ -132,4 +123,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+
 }

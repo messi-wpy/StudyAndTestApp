@@ -4,6 +4,7 @@ import android.util.Log;
 import android.widget.Scroller;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,7 +23,14 @@ import rx.schedulers.Schedulers;
 
 public class GetScorsePresenter {
     private final static String TAG="GetScores";
-    private boolean lgoined=false;
+    private static boolean lgoined=false;
+    private Subscription loginSubscription;
+    private Subscription scoreSubscription;
+    private Date date;
+    private static int time;
+    public void addTime(){
+        time++;
+    }
     public boolean isLogined(){
         return lgoined;
 
@@ -30,6 +38,7 @@ public class GetScorsePresenter {
     public CcnuServices clientWithRetrofit;
     public GetScorsePresenter(){
             clientWithRetrofit=SingleRetrofit.getClient().create(CcnuServices.class);
+            date=new Date();
 
     }
     public CcnuServices getClientWithRetrofit(){
@@ -37,8 +46,9 @@ public class GetScorsePresenter {
     }
 
     //登录教务处获取cookie
-    public Subscription LoginJWC(){
-       Subscription subscriptionOfLogin= clientWithRetrofit.firstLogin()
+    public void LoginJWC(){
+        if (isLogined())return ;
+       loginSubscription= clientWithRetrofit.firstLogin()
                           .subscribeOn(Schedulers.io())
                           .flatMap(new Func1<Response<ResponseBody>, Observable<ResponseBody>>() {
                               @Override
@@ -79,7 +89,7 @@ public class GetScorsePresenter {
             @Override
             public void onError(Throwable e) {
                 if (e instanceof HttpException){
-                    Log.e(TAG, "onError: httpexception code "+((HttpException)e).response().errorBody());
+                    Log.e(TAG, "onError: httpexception code "+((HttpException)e).response().code());
 
                 }
                 else if (e instanceof NullPointerException)
@@ -95,8 +105,39 @@ public class GetScorsePresenter {
                 lgoined=true;
             }
         });
-        Log.i(TAG, "LoginJWC: subscription :"+subscriptionOfLogin.isUnsubscribed());
-        return subscriptionOfLogin;
+        Log.i(TAG, "LoginJWC: subscription :"+loginSubscription.isUnsubscribed());
+    }
+
+
+    public void getScores(Subscriber<ResponseBody>subscriber){
+        if (loginSubscription==null&&!isLogined()){
+            Log.e(TAG, "getScores: wrong"+"未登录或登录失败,使用前请确认调用loginJWC()方法" );
+            return ;
+        }
+       scoreSubscription= Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> subscriber) {
+                if (loginSubscription==null)return;
+                while (!loginSubscription.isUnsubscribed()){
+                    Log.i(TAG, "call: wait");
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                subscriber.onNext("start");
+            }
+        }).subscribeOn(Schedulers.newThread())
+                .flatMap(new Func1<String, Observable<ResponseBody>>() {
+                    @Override
+                    public Observable<ResponseBody> call(String s) {
+                        return clientWithRetrofit.getScores("2018","3",false,String.valueOf(date.getTime()),15,1,"","asc", time);
+                    }
+                }).subscribe(subscriber);
+
+
     }
 
 
@@ -129,7 +170,12 @@ public class GetScorsePresenter {
         return valueOfcookie;
 
     }
-
+    public void unsubscription(){
+        if (scoreSubscription!=null&&!scoreSubscription.isUnsubscribed())
+            scoreSubscription.unsubscribe();
+        if (loginSubscription!=null&&loginSubscription.isUnsubscribed())
+            loginSubscription.unsubscribe();
+    }
 
 
 }
