@@ -18,10 +18,14 @@ import com.example.studyandtestapp.fragment.Mainfragment;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
+import okhttp3.ResponseBody;
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,17 +34,56 @@ public class MainActivity extends AppCompatActivity {
     private Button start_bt;
     private final static String TAG = "Main";
     private MovableView movableView;
-    private GetScorsePresenter scorsePresenter;
-
+    private static GetScorsePresenter scorsePresenter;
+    private Subscription loginSubscription;
+    private Date date=new Date();
+    private int time=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment_test);
         movableView = findViewById(R.id.move_view);
+        if (scorsePresenter==null)
+            scorsePresenter=new GetScorsePresenter();
+        if (!scorsePresenter.isLogined())
+            loginSubscription=scorsePresenter.LoginJWC();
         movableView.setOnClickListener(v -> {
-            if (scorsePresenter==null)
-                scorsePresenter=new GetScorsePresenter();
-            scorsePresenter.LoginJWC();
+            Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
+                @Override
+                public void call(Subscriber<? super String> subscriber) {
+                    while (!loginSubscription.isUnsubscribed()){
+                        Log.i(TAG, "call: wait");
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                    subscriber.onNext("start");
+                }
+            }).subscribeOn(Schedulers.newThread())
+                    .flatMap(new Func1<String, Observable<ResponseBody>>() {
+                        @Override
+                        public Observable<ResponseBody> call(String s) {
+                            return scorsePresenter.getClientWithRetrofit().getScores("2018","3",false,String.valueOf(date.getTime()),15,1,"","asc", time);
+                        }
+                    }).subscribe(new Subscriber<ResponseBody>() {
+                @Override
+                public void onCompleted() {
+                    Log.i(TAG, "onCompleted: getscores");
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    Log.i(TAG, "onError: getscores error");
+                }
+
+                @Override
+                public void onNext(ResponseBody responseBody) {
+                    Log.i(TAG, "onNext: get");
+                }
+            });
 
         });
 

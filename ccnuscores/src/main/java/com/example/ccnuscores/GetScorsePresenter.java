@@ -16,21 +16,29 @@ import retrofit2.Retrofit;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class GetScorsePresenter {
     private final static String TAG="GetScores";
+    private boolean lgoined=false;
+    public boolean isLogined(){
+        return lgoined;
 
-    private CcnuServices clientWithRetrofit;
+    }
+    public CcnuServices clientWithRetrofit;
     public GetScorsePresenter(){
             clientWithRetrofit=SingleRetrofit.getClient().create(CcnuServices.class);
 
     }
+    public CcnuServices getClientWithRetrofit(){
+        return clientWithRetrofit;
+    }
 
     //登录教务处获取cookie
-    public void LoginJWC(){
-        clientWithRetrofit.firstLogin()
+    public Subscription LoginJWC(){
+       Subscription subscriptionOfLogin= clientWithRetrofit.firstLogin()
                           .subscribeOn(Schedulers.io())
                           .flatMap(new Func1<Response<ResponseBody>, Observable<ResponseBody>>() {
                               @Override
@@ -71,7 +79,7 @@ public class GetScorsePresenter {
             @Override
             public void onError(Throwable e) {
                 if (e instanceof HttpException){
-                    Log.e(TAG, "onError: httpexception code "+((HttpException)e).response().code());
+                    Log.e(TAG, "onError: httpexception code "+((HttpException)e).response().errorBody());
 
                 }
                 else if (e instanceof NullPointerException)
@@ -84,10 +92,11 @@ public class GetScorsePresenter {
             @Override
             public void onNext(ResponseBody responseBody) {
                 Log.i(TAG, "onNext: "+"login success");
+                lgoined=true;
             }
         });
-
-
+        Log.i(TAG, "LoginJWC: subscription :"+subscriptionOfLogin.isUnsubscribed());
+        return subscriptionOfLogin;
     }
 
 
@@ -107,10 +116,18 @@ public class GetScorsePresenter {
         if (m1.find())
             res[0]=m1.group(1);
         else res[0]=null;
+        //todo 观察 if execution的值确实不变的话，可以删除，直接填 e1s1
         if (m2.find())
             res[1]=m2.group(1);
         else res[1]=null;
         return res;
+    }
+
+    private String getCookieValueFromHeader(String header){
+        int index=header.indexOf('=');
+        String valueOfcookie=header.substring(index+1);
+        return valueOfcookie;
+
     }
 
 

@@ -22,10 +22,16 @@ public interface CcnuServices {
     //教务系统的登录
     //需要携带cookie cookie没有放在header里面
     @GET("http://xk.ccnu.edu.cn/ssoserver/login?ywxt=jw&url=xtgl/index_initMenu.html")
-    Observable<ResponseBody> performSystemLogin();
+    Observable<ResponseBody > performSystemLogin();
 
 
     //account.ccnu.edu.cn 先从这个进行统一身份认证
     @GET("https://account.ccnu.edu.cn/cas/login")
     Observable<Response<ResponseBody>>firstLogin();
+
+    @POST("http://xk.ccnu.edu.cn/cjcx/cjcx_cxDgXscj.html?doType=query&gnmkdm=N305005")
+    @FormUrlEncoded
+    Observable<ResponseBody>getScores(@Field("xnm")String xnm,@Field("xqm") String xqm,@Field("_search")boolean search,
+                                      @Field("nd")String nd,@Field("queryModel.showCount")int num,@Field("queryModel.currentPage")int page,
+                                      @Field("queryModel.sortName")String sortname,@Field("queryModel.sortOrder")String order,@Field("time")int time);
 }
