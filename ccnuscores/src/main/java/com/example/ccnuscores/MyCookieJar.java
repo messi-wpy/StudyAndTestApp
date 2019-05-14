@@ -13,13 +13,26 @@ public class MyCookieJar implements CookieJar {
 
     public static final String TAG="cookie";
     private List<Cookie>cookieStore=new ArrayList<>();
+    private int lastIndex=-1;
     @Override
     public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
-        for (int i = 0; i < cookies.size(); i++) {
-            Log.i(TAG, "saveFromResponse: cookie"+cookies.get(i));
+        //只保存一个JSESSIONID
+        int indexOfJSESSIONID=-1;
 
+        for (int i = 0; i < cookies.size(); i++) {
+            Log.i(TAG, "saveFromResponse: cookie   "+cookies.get(i));
+            if (cookies.get(i).name().equals("JSESSIONID")) {
+                indexOfJSESSIONID = i;
+            }
+            else cookieStore.add(cookies.get(i));
         }
-        cookieStore.addAll(cookies);
+        if (indexOfJSESSIONID!=-1){
+            if (lastIndex==-1){
+                cookieStore.add(cookies.get(indexOfJSESSIONID));
+                lastIndex=cookieStore.size()-1;
+            }else
+            cookieStore.set(lastIndex,cookies.get(indexOfJSESSIONID));
+        }
     }
 
     @Override

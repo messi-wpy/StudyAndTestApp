@@ -47,5 +47,6 @@ dependencies {
     implementation dependences.Gson
     implementation dependences.rxjava
     implementation dependences.okhttplog
+    implementation dependences.retrofit
 
 }

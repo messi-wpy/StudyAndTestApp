@@ -14,33 +14,19 @@ import com.example.ccnuscores.GetScorsePresenter;
 import com.example.studyandtestapp.CustomView.ItemLinearLayout;
 import com.example.studyandtestapp.CustomView.LargeImageView;
 import com.example.studyandtestapp.CustomView.MovableView;
-
-
-import com.example.myretrofit.NetCallback;
-import com.example.myretrofit.RestService;
-import com.example.studyandtestapp.CustomView.LargeImageView;
-import com.example.studyandtestapp.Net.NetRestService;
-import com.example.studyandtestapp.data.Email;
-
 import com.example.studyandtestapp.fragment.Mainfragment;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.TimeUnit;
+import java.util.Date;
 
-
+import okhttp3.ResponseBody;
+import retrofit2.HttpException;
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.functions.Func1;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,22 +36,51 @@ public class MainActivity extends AppCompatActivity {
     private final static String TAG = "Main";
     private MovableView movableView;
     private GetScorsePresenter scorsePresenter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment_test);
         movableView = findViewById(R.id.move_view);
-        movableView.setOnClickListener(v -> {
-            if (scorsePresenter==null)
-                scorsePresenter=new GetScorsePresenter();
+        if (scorsePresenter==null)
+            scorsePresenter=new GetScorsePresenter();
+        if (!scorsePresenter.isLogined())
             scorsePresenter.LoginJWC();
+        movableView.setOnClickListener(v -> {
+          scorsePresenter.getScores(new Subscriber<ResponseBody>() {
+              @Override
+              public void onCompleted() {
+                  Log.i(TAG, "onCompleted: getscores");
+
+              }
+
+              @Override
+              public void onError(Throwable e) {
+                  Log.e(TAG, "onError: getscores error");
+                  if (e instanceof HttpException){
+                      Log.e(TAG, "onError: HttpException "+((HttpException)e).response().code());
+
+                  }
+
+              }
+
+              @Override
+              public void onNext(ResponseBody responseBody) {
+                  Log.i(TAG, "onNext: get");
+                  scorsePresenter.addTime();
+              }
+          });
 
         });
 
     }
 
 
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        scorsePresenter.unsubscription();
+
+    }
     public void rxjavaTest(){
         Observable.just("hello")
                 .flatMap(new Func1<String, Observable<?>>() {
@@ -107,21 +122,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Email email=new Email();
-        email.setEmail("904315105@qq.com");
-        restService.createService(NetRestService.class)
-                .postEmail(email)
-                .enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        Log.i(RestService.TAG, "onFailure: ");
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        Log.i(RestService.TAG, "onResponse: post success");
-                    }
-                });
-
     }
+
+
 }
