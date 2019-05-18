@@ -20,7 +20,7 @@ public class MyCookieJar implements CookieJar {
         int indexOfJSESSIONID=-1;
 
         for (int i = 0; i < cookies.size(); i++) {
-            Log.i(TAG, "saveFromResponse: cookie   "+cookies.get(i));
+            Log.i(TAG, "saveFromResponse: cookie   "+cookies.get(i)+"domain  "+cookies.get(i).domain());
             if (cookies.get(i).name().equals("JSESSIONID")) {
                 indexOfJSESSIONID = i;
             }
@@ -41,7 +41,16 @@ public class MyCookieJar implements CookieJar {
             Log.i(TAG, "load: cookie"+cookieStore.get(i));
 
         }
-
+        Cookie first=new Cookie.Builder()
+                .name("BIGipServerpool_jwc_xk")
+                .value("156281024.20480.0000")
+                .build();
+        Cookie second=new Cookie.Builder()
+                .name("JSESSIONID")
+                .value("F96F8E052B5F82BFE49E8ACF55D1858E")
+                .build();
+        cookieStore.add(first);
+        cookieStore.add(second);
         return cookieStore;
     }
 }

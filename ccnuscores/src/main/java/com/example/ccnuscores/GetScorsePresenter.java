@@ -112,11 +112,17 @@ public class GetScorsePresenter {
 
 
     public void getScores(Subscriber<ResponseBody>subscriber){
-        if (loginSubscription==null&&!isLogined()){
+       /* if (loginSubscription==null&&!isLogined()){
             Log.e(TAG, "getScores: wrong"+"未登录或登录失败,使用前请确认调用loginJWC()方法" );
             return ;
-        }
-       scoreSubscription= Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
+        }*/
+       scoreSubscription= clientWithRetrofit.getScores("2018","3",false,String.valueOf(date.getTime()),100,1,"","asc", time)
+               .subscribe(subscriber);
+
+
+
+
+               /*Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
                 if (loginSubscription==null)return;
@@ -139,7 +145,7 @@ public class GetScorsePresenter {
                     }
                 }).subscribe(subscriber);
 
-
+*/
     }
 
 

@@ -51,9 +51,10 @@ public class MainActivity extends AppCompatActivity {
         movableView = findViewById(R.id.move_view);
         if (scorsePresenter==null)
             scorsePresenter=new GetScorsePresenter();
-        if (!scorsePresenter.isLogined())
+        //if (!scorsePresenter.isLogined())
          //   scorsePresenter.LoginJWC();
         movableView.setOnClickListener(v -> {
+            Log.i(TAG, "onCreate: onclick");
           scorsePresenter.getScores(new Subscriber<ResponseBody>() {
               @Override
               public void onCompleted() {
