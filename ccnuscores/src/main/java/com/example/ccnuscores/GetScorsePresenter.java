@@ -54,6 +54,7 @@ public class GetScorsePresenter {
                           .flatMap(new Func1<Response<ResponseBody>, Observable<ResponseBody>>() {
                               @Override
                               public Observable<ResponseBody> call(Response<ResponseBody> response) {
+
                                   if (response.code()!=200)
                                       return Observable.error(new HttpException(response));
                                   List<String>cookies=response.headers().values("Set-Cookie");
@@ -117,6 +118,7 @@ public class GetScorsePresenter {
             return ;
         }*/
        scoreSubscription= clientWithRetrofit.getScores("2018","3",false,String.valueOf(date.getTime()),100,1,"","asc", time)
+               .subscribeOn(Schedulers.io())
                .subscribe(subscriber);
 
 
