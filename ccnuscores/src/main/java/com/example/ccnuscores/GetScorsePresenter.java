@@ -135,7 +135,7 @@ public class GetScorsePresenter {
                 .flatMap(new Func1<String, Observable<ResponseBody>>() {
                     @Override
                     public Observable<ResponseBody> call(String s) {
-                        return clientWithRetrofit.getScores("2018","3",false,String.valueOf(date.getTime()),15,1,"","asc", time);
+                        return clientWithRetrofit.getScores("2018","3",false,String.valueOf(date.getTime()),100,1,"","asc", time);
                     }
                 }).subscribe(subscriber);
 

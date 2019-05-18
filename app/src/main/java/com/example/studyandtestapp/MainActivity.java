@@ -1,5 +1,6 @@
 package com.example.studyandtestapp;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.ObjectAnimator;
@@ -14,11 +15,18 @@ import com.example.ccnuscores.GetScorsePresenter;
 import com.example.studyandtestapp.CustomView.ItemLinearLayout;
 import com.example.studyandtestapp.CustomView.LargeImageView;
 import com.example.studyandtestapp.CustomView.MovableView;
+import com.example.studyandtestapp.data.Score;
 import com.example.studyandtestapp.fragment.Mainfragment;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.HttpException;
@@ -44,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         if (scorsePresenter==null)
             scorsePresenter=new GetScorsePresenter();
         if (!scorsePresenter.isLogined())
-            scorsePresenter.LoginJWC();
+         //   scorsePresenter.LoginJWC();
         movableView.setOnClickListener(v -> {
           scorsePresenter.getScores(new Subscriber<ResponseBody>() {
               @Override
@@ -67,11 +75,51 @@ public class MainActivity extends AppCompatActivity {
               public void onNext(ResponseBody responseBody) {
                   Log.i(TAG, "onNext: get");
                   scorsePresenter.addTime();
+                  try {
+                     List<Score> list=getScoreFromJson(responseBody.string());
+                      for (int i = 0; i <list.size() ; i++) {
+                          Log.i(TAG, "onNext: "+list.get(i).course+list.get(i).grade);
+                      }
+                  } catch (JSONException e) {
+                      e.printStackTrace();
+                  } catch (IOException e) {
+                      e.printStackTrace();
+                  }
               }
           });
 
         });
 
+    }
+    public @Nullable
+    List<Score> getScoreFromJson(String json) throws JSONException {
+        List<Score> list = new ArrayList<>();
+        JSONObject jsonRoot = new JSONObject(json);
+        JSONArray items = jsonRoot.getJSONArray("items");
+        if (items == null || items.length() == 0) {
+            Log.i(TAG, "getScoreFromJson: item==null?" + (items == null));
+            return null;
+        }
+        for (int i = 0; i < items.length(); i++) {
+            JSONObject item = items.getJSONObject(i);
+            Score score = new Score();
+            score.course = item.getString("kcmc");
+            if (score.course==null)
+                score.course="  ";
+            score.credit = item.getString("xf");
+            if (score.credit==null)
+                score.credit="0";
+            score.grade=item.getString("cj");
+            if (score.grade==null)
+                score.grade="0";
+            score.jxb_id=item.getString("jxb_id");
+            if (score.jxb_id==null)
+                score.jxb_id="  ";
+
+            score.kcxzmc=item.getString("kcxzmc");
+            list.add(score);
+        }
+        return list;
     }
 
 
