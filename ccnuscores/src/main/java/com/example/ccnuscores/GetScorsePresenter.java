@@ -54,6 +54,7 @@ public class GetScorsePresenter {
                           .flatMap(new Func1<Response<ResponseBody>, Observable<ResponseBody>>() {
                               @Override
                               public Observable<ResponseBody> call(Response<ResponseBody> response) {
+
                                   if (response.code()!=200)
                                       return Observable.error(new HttpException(response));
                                   List<String>cookies=response.headers().values("Set-Cookie");
@@ -112,11 +113,18 @@ public class GetScorsePresenter {
 
 
     public void getScores(Subscriber<ResponseBody>subscriber){
-        if (loginSubscription==null&&!isLogined()){
+       /* if (loginSubscription==null&&!isLogined()){
             Log.e(TAG, "getScores: wrong"+"未登录或登录失败,使用前请确认调用loginJWC()方法" );
             return ;
-        }
-       scoreSubscription= Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
+        }*/
+       scoreSubscription= clientWithRetrofit.getScores("2018","3",false,String.valueOf(date.getTime()),100,1,"","asc", time)
+               .subscribeOn(Schedulers.io())
+               .subscribe(subscriber);
+
+
+
+
+               /*Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
                 if (loginSubscription==null)return;
@@ -135,11 +143,11 @@ public class GetScorsePresenter {
                 .flatMap(new Func1<String, Observable<ResponseBody>>() {
                     @Override
                     public Observable<ResponseBody> call(String s) {
-                        return clientWithRetrofit.getScores("2018","3",false,String.valueOf(date.getTime()),15,1,"","asc", time);
+                        return clientWithRetrofit.getScores("2018","3",false,String.valueOf(date.getTime()),100,1,"","asc", time);
                     }
                 }).subscribe(subscriber);
 
-
+*/
     }
 
 
