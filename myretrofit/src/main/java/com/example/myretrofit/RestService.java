@@ -25,20 +25,29 @@ public class RestService {
     public final static String TAG="retrofit";
     private OkHttpClient okHttpClient;
     private String baseUrl;
+    private Converter.Factory mConverterFactory;
     private RestService(Builder builder){
         if (builder.client==null){
-            okHttpClient=new OkHttpClient.Builder()
-                    .build();
+            throw new NullPointerException("okhttpClient ==null");
         }else
             okHttpClient=builder.client;
+        if (baseUrl.isEmpty()){
+            throw new IllegalArgumentException("baseUrl can't be emplty");
+        }
         baseUrl=builder.baseUrl;
+        mConverterFactory=builder.converterFactory;
+
     }
 
     public static class Builder{
         private OkHttpClient client;
         private String baseUrl;
+        private Converter.Factory converterFactory;
 
-
+        public Builder setConverFactory(Converter.Factory factory){
+            converterFactory=factory;
+            return this;
+        }
         public Builder setBaseUrl(String baseUrl) {
             this.baseUrl = baseUrl;
             return this;
