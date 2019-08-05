@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.PublicKey;
 
-public class LargeImageView  extends View {
+public class LargeImageView  extends View implements View.OnTouchListener {
 
     //该对象可以实现图片的局部显示
     private BitmapRegionDecoder mDecoder;
@@ -52,7 +52,7 @@ public class LargeImageView  extends View {
         mRect=new Rect();
         mScroller=new Scroller(context);
         mGestureDetector=new GestureDetector(context,new GestureImpl());
-
+        setOnTouchListener(this);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class LargeImageView  extends View {
 
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean onTouch(View v,MotionEvent event) {
 
 
         //改为让gestureDetector来处理触摸事件
@@ -113,7 +113,8 @@ public class LargeImageView  extends View {
                imageWidth /= 2;
                insamplesize*=2;
             }
-
+            option.inMutable=true;
+            option.inPreferredConfig = Bitmap.Config.RGB_565;
             option.inSampleSize=insamplesize;
             Log.i(TAG, "setImage: ------------"+imageWidth+"   "+imageHeight);
             // TODO: 19-3-19 添加铺满放大缩小选项
@@ -124,7 +125,7 @@ public class LargeImageView  extends View {
 
             }
 
-
+            requestLayout();
             invalidate();
         } catch (IOException e) {
             e.printStackTrace();
