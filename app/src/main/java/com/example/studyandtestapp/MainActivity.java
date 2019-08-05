@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.example.ccnuscores.GetScorsePresenter;
 import com.example.studyandtestapp.CustomView.ItemLinearLayout;
@@ -47,50 +48,66 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_fragment_test);
+        setContentView(R.layout.activity_main);
+        largeImageView=findViewById(R.id.large_image);
+        start_bt=findViewById(R.id.load_1);
+        start_bt.setOnClickListener(v -> {
+
+            try {
+                String[] files=getAssets().list("");
+                InputStream in=getAssets().open(files[0]);
+                largeImageView.setFitXY(true).setImage(in);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        });
+    }
+
+    public void scoreTest(){
         movableView = findViewById(R.id.move_view);
         if (scorsePresenter==null)
             scorsePresenter=new GetScorsePresenter();
         //if (!scorsePresenter.isLogined())
-         //   scorsePresenter.LoginJWC();
+        //   scorsePresenter.LoginJWC();
         movableView.setOnClickListener(v -> {
             Log.i(TAG, "onCreate: onclick");
-          scorsePresenter.getScores(new Subscriber<ResponseBody>() {
-              @Override
-              public void onCompleted() {
-                  Log.i(TAG, "onCompleted: getscores");
+            scorsePresenter.getScores(new Subscriber<ResponseBody>() {
+                @Override
+                public void onCompleted() {
+                    Log.i(TAG, "onCompleted: getscores");
 
-              }
+                }
 
-              @Override
-              public void onError(Throwable e) {
-                  Log.e(TAG, "onError: getscores error");
-                  if (e instanceof HttpException){
-                      Log.e(TAG, "onError: HttpException "+((HttpException)e).response().code());
+                @Override
+                public void onError(Throwable e) {
+                    Log.e(TAG, "onError: getscores error");
+                    if (e instanceof HttpException){
+                        Log.e(TAG, "onError: HttpException "+((HttpException)e).response().code());
 
-                  }
+                    }
 
-              }
+                }
 
-              @Override
-              public void onNext(ResponseBody responseBody) {
-                  Log.i(TAG, "onNext: get");
-                  scorsePresenter.addTime();
-                  try {
-                     List<Score> list=getScoreFromJson(responseBody.string());
-                      for (int i = 0; i <list.size() ; i++) {
-                          Log.i(TAG, "onNext: "+list.get(i).course+list.get(i).grade);
-                      }
-                  } catch (JSONException e) {
-                      e.printStackTrace();
-                  } catch (IOException e) {
-                      e.printStackTrace();
-                  }
-              }
-          });
+                @Override
+                public void onNext(ResponseBody responseBody) {
+                    Log.i(TAG, "onNext: get");
+                    scorsePresenter.addTime();
+                    try {
+                        List<Score> list=getScoreFromJson(responseBody.string());
+                        for (int i = 0; i <list.size() ; i++) {
+                            Log.i(TAG, "onNext: "+list.get(i).course+list.get(i).grade);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
 
         });
-
     }
     public @Nullable
     List<Score> getScoreFromJson(String json) throws JSONException {
