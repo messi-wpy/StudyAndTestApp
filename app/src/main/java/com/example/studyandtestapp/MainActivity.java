@@ -4,7 +4,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.ObjectAnimator;
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
@@ -23,8 +30,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -45,6 +58,33 @@ public class MainActivity extends AppCompatActivity {
     private final static String TAG = "Main";
     private MovableView movableView;
     private GetScorsePresenter scorsePresenter;
+    private static final String ALBUM_PATH = Environment.getExternalStorageDirectory() + "/BigView/";
+
+    private Handler handler=new MainHandler(this) ;
+
+
+    private static class  MainHandler extends Handler{
+
+        WeakReference<Activity > mActivityReference;
+        public MainHandler(Activity activity) {
+            mActivityReference= new WeakReference<Activity>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            ((MainActivity)mActivityReference.get()).setImage((String) msg.obj);
+
+        }
+
+    }
+
+    public void setImage(String path){
+        try {
+            largeImageView.setFitXY(true).setImage(new FileInputStream(path));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,18 +92,41 @@ public class MainActivity extends AppCompatActivity {
         largeImageView=findViewById(R.id.large_image);
         start_bt=findViewById(R.id.load_1);
         start_bt.setOnClickListener(v -> {
-
-            try {
-                String[] files=getAssets().list("");
-                InputStream in=getAssets().open(files[0]);
-                largeImageView.setFitXY(true).setImage(in);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+           new Thread(()->{
+               String path="";
+               try {
+                   path=saveFile(BitmapFactory.decodeStream(getAssets().open("test.png")));
+               } catch (IOException e) {
+                   e.printStackTrace();
+               }
+               Message msg=new Message();
+               msg.obj=path;
+            handler.sendMessage(msg);
+           }).start();
 
         });
     }
+
+    public static String saveFile(Bitmap bm) throws IOException {
+        File dirFile = new File(ALBUM_PATH);
+        if(!dirFile.exists()){
+            dirFile.mkdir();
+        }
+        File myCaptureFile = new File(ALBUM_PATH + SystemClock.currentThreadTimeMillis() +".jpeg");
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(myCaptureFile));
+        bm.compress(Bitmap.CompressFormat.JPEG, 80, bos);
+        bos.flush();
+        bos.close();
+        return myCaptureFile.getAbsolutePath();
+    }
+
+
+
+
+
+
+
+
 
     public void scoreTest(){
         movableView = findViewById(R.id.move_view);

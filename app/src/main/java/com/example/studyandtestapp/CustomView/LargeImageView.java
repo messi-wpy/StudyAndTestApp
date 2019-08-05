@@ -30,7 +30,7 @@ public class LargeImageView  extends View implements View.OnTouchListener {
     private float imageWidth,imageHeight;
     private float lastX,lastY;
     private float scale=1;
-    Bitmap bmp;
+    private Bitmap bmp;
     private Matrix matrix=new Matrix();
     private final static String TAG="TAG";
 
@@ -57,22 +57,16 @@ public class LargeImageView  extends View implements View.OnTouchListener {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Log.i("TAG", "onDraw: called");
+        super.onDraw(canvas);
         if (mDecoder!=null) {
-            option.inBitmap=bmp;
-           if( isFitXY){
+                option.inBitmap=bmp;
                 matrix.setScale(scale,scale);
                 bmp = mDecoder.decodeRegion(mRect, option);
-               Log.i("TAG", "onDraw: "+bmp.getByteCount());
-               //局部图片占4.7M，缩小了一半内存!
-               canvas.drawBitmap(bmp,matrix,null);
-            }else {
-               bmp = mDecoder.decodeRegion(mRect, option);
-               Log.i("TAG", "onDraw: " + bmp.getByteCount());
-               //局部图片占4.7M，缩小了一半内存!
-               canvas.drawBitmap(bmp, 0, 0, null);
+                canvas.drawBitmap(bmp,matrix,null);
+            Log.i("TAG", "onDraw: "+bmp.getByteCount());
+
            }
-        }
+
 
     }
 
@@ -80,11 +74,9 @@ public class LargeImageView  extends View implements View.OnTouchListener {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         mRect.left=0;
-        width=mRect.right=getMeasuredWidth();
+        width=getMeasuredWidth();
         mRect.top=0;
-        hight=mRect.bottom=getMeasuredHeight();
-        currentImageX=0;
-        currentImageY=0;
+        hight=getMeasuredHeight();
 
 
     }
@@ -114,17 +106,17 @@ public class LargeImageView  extends View implements View.OnTouchListener {
                insamplesize*=2;
             }
             option.inMutable=true;
-            option.inPreferredConfig = Bitmap.Config.RGB_565;
             option.inSampleSize=insamplesize;
             Log.i(TAG, "setImage: ------------"+imageWidth+"   "+imageHeight);
             // TODO: 19-3-19 添加铺满放大缩小选项
             if (isFitXY){
                 scale=width/imageWidth;
-                imageHeight+=hight-(hight/scale);
                 Log.i(TAG, "setImage: ----------"+imageHeight);
 
             }
 
+            mRect.bottom=(int)(hight/scale);
+            mRect.right=(int)imageWidth;
             requestLayout();
             invalidate();
         } catch (IOException e) {
@@ -152,7 +144,7 @@ public class LargeImageView  extends View implements View.OnTouchListener {
         }
         if (mScroller.computeScrollOffset()){
             mRect.top=mScroller.getCurrY();
-            mRect.bottom=mRect.top+hight;
+            mRect.bottom=mRect.top+(int)(hight/scale);
             invalidate();
         }
 
@@ -195,12 +187,12 @@ public class LargeImageView  extends View implements View.OnTouchListener {
           //限制边界
           if (mRect.bottom>imageHeight){
               mRect.bottom=(int)imageHeight;
-              mRect.top=mRect.bottom-hight;
+              mRect.top=(int)imageHeight-(int)(hight/scale);
 
           }
           if (mRect.top<0){
               mRect.top=0;
-              mRect.bottom=hight;
+              mRect.bottom=(int)(hight/scale);
           }
           invalidate();
           return false;
@@ -214,8 +206,9 @@ public class LargeImageView  extends View implements View.OnTouchListener {
       //速度
       @Override
       public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            mScroller.fling(0,mRect.top,0,(int)-velocityY,0,0,0,(int)imageHeight-hight);
-
+            mScroller.fling(0,mRect.top,0,(int)-velocityY,
+                    0,0,0,(int)imageHeight-(int)(hight/scale));
+          Log.i(TAG, "onFling: "+velocityY);
           return false;
       }
   }
