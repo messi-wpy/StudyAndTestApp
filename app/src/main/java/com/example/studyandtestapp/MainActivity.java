@@ -7,17 +7,21 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.ImageViewState;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.example.ccnuscores.GetScorsePresenter;
 import com.example.studyandtestapp.CustomView.ItemLinearLayout;
@@ -88,23 +92,35 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        largeImageView=findViewById(R.id.large_image);
-        start_bt=findViewById(R.id.load_1);
-        start_bt.setOnClickListener(v -> {
-           new Thread(()->{
-               String path="";
-               try {
-                   path=saveFile(BitmapFactory.decodeStream(getAssets().open("test.png")));
-               } catch (IOException e) {
-                   e.printStackTrace();
-               }
-               Message msg=new Message();
-               msg.obj=path;
-            handler.sendMessage(msg);
-           }).start();
+        setContentView(R.layout.activity_test);
+        imageView=findViewById(R.id.imageView);
 
+        ViewTreeObserver vto = imageView.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                imageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                imageView.getHeight();
+                int w=imageView.getWidth();
+                try {
+                    imageView.setImage(ImageSource.asset("tete.png"),new ImageViewState(fiTXY(w),new PointF(0,0),0));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         });
+
+
+
+    }
+
+    public float  fiTXY(int width) throws IOException {
+        BitmapFactory.Options option=new BitmapFactory.Options();
+        option.inJustDecodeBounds=true;
+        BitmapFactory.decodeStream(getAssets().open("tete.png"), null, option);
+        float scale=(float) width/option.outWidth;
+
+        return scale;
     }
 
     public static String saveFile(Bitmap bm) throws IOException {
