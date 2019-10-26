@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -17,6 +18,7 @@ import com.example.studyandtestapp.CustomView.LargeImageView;
 import com.example.studyandtestapp.CustomView.MovableView;
 import com.example.studyandtestapp.data.Score;
 import com.example.studyandtestapp.fragment.Mainfragment;
+import com.example.studyandtestapp.largeImage.LargeImageViewActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment_test);
         movableView = findViewById(R.id.move_view);
+
+/*
         if (scorsePresenter==null)
             scorsePresenter=new GetScorsePresenter();
         //if (!scorsePresenter.isLogined())
@@ -90,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
           });
 
         });
+*/
 
     }
     public @Nullable
@@ -127,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
-        scorsePresenter.unsubscription();
+//        scorsePresenter.unsubscription();
 
     }
     public void rxjavaTest(){

@@ -22,6 +22,10 @@
        android:layout_height="match_parent"
        android:id="@+id/content">
 
+       <com.example.studyandtestapp.CustomView.DrawView
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:id="@+id/study_view"/>
 
    </FrameLayout>
 </LinearLayout>
