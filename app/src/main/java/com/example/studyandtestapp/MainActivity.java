@@ -7,6 +7,8 @@ import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +53,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment_test);
         movableView = findViewById(R.id.move_view);
+        findViewById(R.id.scale_bt).setOnClickListener(v -> {
+            TextView tv=findViewById(R.id.main_tv);
+            Animation animation= AnimationUtils.loadAnimation(MainActivity.this,R.anim.scaleanim);
+            tv.startAnimation(animation);
+
+        });
 
 /*
         if (scorsePresenter==null)
