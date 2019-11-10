@@ -9,14 +9,16 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Scroller;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.PublicKey;
 
-public class LargeImageView  extends View {
+public class LargeImageView  extends View implements View.OnTouchListener {
 
     //该对象可以实现图片的局部显示
     private BitmapRegionDecoder mDecoder;
@@ -27,9 +29,17 @@ public class LargeImageView  extends View {
     private float currentImageX,currentImageY;
     private float imageWidth,imageHeight;
     private float lastX,lastY;
-    private float scale;
+    private float scale=1;
+    private Bitmap bmp;
     private Matrix matrix=new Matrix();
     private final static String TAG="TAG";
+
+    private Scroller mScroller;
+    private GestureDetector mGestureDetector;
+
+    public LargeImageView(Context context){
+        this(context,null);
+    }
     /**
      *
      * @param context
@@ -40,27 +50,23 @@ public class LargeImageView  extends View {
         //设置为一个像素点3byte
         option.inPreferredConfig= Bitmap.Config.RGB_565;
         mRect=new Rect();
-
+        mScroller=new Scroller(context);
+        mGestureDetector=new GestureDetector(context,new GestureImpl());
+        setOnTouchListener(this);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Log.i("TAG", "onDraw: called");
+        super.onDraw(canvas);
         if (mDecoder!=null) {
-           if( isFitXY){
+                option.inBitmap=bmp;
                 matrix.setScale(scale,scale);
+                bmp = mDecoder.decodeRegion(mRect, option);
+                canvas.drawBitmap(bmp,matrix,null);
+            Log.i("TAG", "onDraw: "+bmp.getByteCount());
 
-               Bitmap bmp = mDecoder.decodeRegion(mRect, option);
-               Log.i("TAG", "onDraw: "+bmp.getByteCount());
-               //局部图片占4.7M，缩小了一半内存!
-               canvas.drawBitmap(bmp,matrix,null);
-            }else {
-               Bitmap bmp = mDecoder.decodeRegion(mRect, option);
-               Log.i("TAG", "onDraw: " + bmp.getByteCount());
-               //局部图片占4.7M，缩小了一半内存!
-               canvas.drawBitmap(bmp, 0, 0, null);
            }
-        }
+
 
     }
 
@@ -68,79 +74,20 @@ public class LargeImageView  extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         mRect.left=0;
-        width=mRect.right=getMeasuredWidth();
+        width=getMeasuredWidth();
         mRect.top=0;
-        hight=mRect.bottom=getMeasuredHeight();
-        currentImageX=0;
-        currentImageY=0;
+        hight=getMeasuredHeight();
 
 
     }
 
 
-    float add = 5;
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-
-        float moveX=event.getX()-lastX;
-        float moveY=lastY-event.getY();
-        if (moveY>0)
-            moveY+=5;
-        else
-            moveY-=5;
+    public boolean onTouch(View v,MotionEvent event) {
 
 
-        int action=event.getAction();
-        switch (action){
-            case MotionEvent.ACTION_DOWN: {
-                Log.i("TAG", "onTouchEvent: -----------DOWN"+event.getY());
-                lastX = event.getX();
-                lastY = event.getY();
-                break;
-            }
-            case MotionEvent.ACTION_MOVE: {
-                Log.i("TAG", "onTouchEvent: -----------MOVE"+moveY);
-                //水平方向的移动
-                boolean movedX, movedY;
-                movedX = movedY = false;
-                lastX=event.getX();
-                lastY=event.getY();
-                // TODO: 19-3-19 优化体验，判断滑动距离来优化
-              /*  if (moveY>0&&moveY<100)
-                    moveY=50;
-                if ()
-*/
-                if (mRect.right+moveX <= imageWidth &&mRect.left+moveX>=0) {
-                    currentImageX += moveX;
-                    mRect.left = (int) currentImageX;
-                    mRect.right+= (int)moveX;
-                    movedX = true;
-                }
-
-                if (mRect.bottom+moveY < imageHeight&& mRect.top+moveY>0) {
-                    currentImageY += moveY;
-                    mRect.top= (int) currentImageY;
-                    mRect.bottom+=(int)moveY;
-                    movedY = true;
-                    Log.i(TAG, "onTouchEvent: -------------------------mrect.bottom"+mRect.bottom);
-                }
-
-                if (movedX || movedY) {
-                    //call it to re draw
-                    invalidate();
-                }
-                break;
-            }
-            case MotionEvent.ACTION_UP:{
-                add=0;
-                Log.i(TAG, "onTouchEvent: ----------UP");
-
-            }
-
-        }
-
-
-        return true;
+        //改为让gestureDetector来处理触摸事件
+        return mGestureDetector.onTouchEvent(event);
     }
 
     public LargeImageView setImage(InputStream image){
@@ -158,18 +105,19 @@ public class LargeImageView  extends View {
                imageWidth /= 2;
                insamplesize*=2;
             }
-
+            option.inMutable=true;
             option.inSampleSize=insamplesize;
             Log.i(TAG, "setImage: ------------"+imageWidth+"   "+imageHeight);
             // TODO: 19-3-19 添加铺满放大缩小选项
             if (isFitXY){
                 scale=width/imageWidth;
-                imageHeight+=hight-(hight/scale);
                 Log.i(TAG, "setImage: ----------"+imageHeight);
 
             }
 
-
+            mRect.bottom=(int)(hight/scale);
+            mRect.right=(int)imageWidth;
+            requestLayout();
             invalidate();
         } catch (IOException e) {
             e.printStackTrace();
@@ -189,9 +137,81 @@ public class LargeImageView  extends View {
         return this;
     }
 
+    @Override
+    public void computeScroll(){
+        if (mScroller.isFinished()){
+            return;
+        }
+        if (mScroller.computeScrollOffset()){
+            mRect.top=mScroller.getCurrY();
+            mRect.bottom=mRect.top+(int)(hight/scale);
+            invalidate();
+        }
+
+    }
+
+  private class GestureImpl implements GestureDetector.OnGestureListener{
 
 
+      @Override
+      public boolean onDown(MotionEvent e) {
+          if (!mScroller.isFinished()){
+              mScroller.forceFinished(true);
+          }
+          return true;
+      }
 
+      @Override
+      public void onShowPress(MotionEvent e) {
+
+      }
+
+      @Override
+      public boolean onSingleTapUp(MotionEvent e) {
+          return false;
+      }
+
+      /**
+       * 这个方法关系到滑动时是否感觉卡顿，不流畅
+       * @param e1  是down的事件
+       * @param e2   是滑动期间的这次事件
+       * @param distanceX   这次滑动和上一次last滑动之间的距离
+       * @param distanceY    这次滑动和上一次last滑动之间的距离
+       * @return   这个事件是否被consumed
+       */
+
+      @Override
+      public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+          mRect.offset(0,(int)distanceY);
+
+          //限制边界
+          if (mRect.bottom>imageHeight){
+              mRect.bottom=(int)imageHeight;
+              mRect.top=(int)imageHeight-(int)(hight/scale);
+
+          }
+          if (mRect.top<0){
+              mRect.top=0;
+              mRect.bottom=(int)(hight/scale);
+          }
+          invalidate();
+          return false;
+      }
+
+      @Override
+      public void onLongPress(MotionEvent e) {
+
+      }
+
+      //速度
+      @Override
+      public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            mScroller.fling(0,mRect.top,0,(int)-velocityY,
+                    0,0,0,(int)imageHeight-(int)(hight/scale));
+          Log.i(TAG, "onFling: "+velocityY);
+          return false;
+      }
+  }
 
 
 
