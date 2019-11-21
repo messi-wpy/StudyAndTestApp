@@ -51,14 +51,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_fragment_test);
-        movableView = findViewById(R.id.move_view);
-        findViewById(R.id.scale_bt).setOnClickListener(v -> {
-            TextView tv=findViewById(R.id.main_tv);
-            Animation animation= AnimationUtils.loadAnimation(MainActivity.this,R.anim.scaleanim);
-            tv.startAnimation(animation);
+        setContentView(R.layout.acitivty_view_test);
 
-        });
+
 
 /*
         if (scorsePresenter==null)
