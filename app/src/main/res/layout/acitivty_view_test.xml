@@ -9,6 +9,13 @@
         android:orientation="vertical"
         android:id="@+id/my_linear">
 
+        <com.example.studyandtestapp.CustomView.TitleBar
+            android:id="@+id/titlebar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            app:title_text="@string/app_name"
+            app:title_text_color="@color/titleText"
+            app:title_bg="@color/titleBg"/>
 
        <com.example.studyandtestapp.CustomView.CircleView
            android:layout_width="100dp"
