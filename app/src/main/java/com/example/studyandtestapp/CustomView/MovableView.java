@@ -37,6 +37,7 @@ public class MovableView extends View {
 
     @Override
     public void draw(Canvas canvas) {
+        Log.i("ondraw", "draw: ");
         super.draw(canvas);
     }
 

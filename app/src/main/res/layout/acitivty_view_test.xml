@@ -17,6 +17,7 @@
             app:title_text_color="@color/titleText"
             app:title_bg="@color/titleBg"/>
 
+
        <com.example.studyandtestapp.CustomView.CircleView
            android:layout_width="100dp"
            android:layout_height="100dp"
