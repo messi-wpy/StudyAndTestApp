@@ -2,7 +2,9 @@ package com.example.studyandtestapp.CustomView;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Scroller;
@@ -15,19 +17,27 @@ public class HorizontalView extends ViewGroup {
     private int lastX;
     private int lastY;
     private Scroller scroller;
+    private VelocityTracker tracker;
 
     private int currentIndex=0;
     private int childWidth=0;
     public HorizontalView(Context context) {
         super(context);
+        init(context);
     }
 
     public HorizontalView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init(context);
     }
 
     public HorizontalView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+    }
+
+    private void init(Context context){
+        scroller=new Scroller(context);
+        tracker=VelocityTracker.obtain();
     }
 
 
@@ -72,7 +82,7 @@ public class HorizontalView extends ViewGroup {
              if (child.getVisibility()!=View.GONE){
                  int width=child.getMeasuredWidth();
                  childWidth=width;
-                 child.layout(left,0,left+width,child.getHeight());
+                 child.layout(left,0,left+width,child.getMeasuredHeight());
                  left+=width;
              }
 
@@ -89,6 +99,9 @@ public class HorizontalView extends ViewGroup {
 
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
+                if (!scroller.isFinished()){
+                    scroller.abortAnimation();
+                }
                 break;
             case MotionEvent.ACTION_MOVE: {
                 int deltaX = x - lastInterceptX;
@@ -109,9 +122,10 @@ public class HorizontalView extends ViewGroup {
     }
     @Override
     public boolean onTouchEvent(MotionEvent event){
+        Log.i("test", "HorizontalView onTouchEvent: call");
         int x=(int)event.getX();
         int y=(int)event.getY();
-
+        tracker.addMovement(event);
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
                 break;
@@ -127,8 +141,22 @@ public class HorizontalView extends ViewGroup {
                     }else {
                         currentIndex--;
                     }
+                }else {
+                    //计算速度，如果是快速滑动也可以
+                    tracker.computeCurrentVelocity(1000);
+                    float velocity=tracker.getXVelocity();
+                    if (Math.abs(velocity)>50){
+                        if (velocity>0){
+                            currentIndex--;
+                        }else {
+                            currentIndex++;
+                        }
+                    }
                 }
+                currentIndex=currentIndex<0?0:currentIndex>getChildCount()-1?getChildCount()-1:currentIndex;
+
                 smoothScrollTo(currentIndex*childWidth,0);
+                tracker.clear();
                 break;
         }
         lastX=x;

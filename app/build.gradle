@@ -49,6 +49,6 @@ dependencies {
     implementation dependences.rxjava
     implementation dependences.okhttplog
     implementation dependences.retrofit
-    api 'org.aspectj:aspectjrt:1.9.4'
+    implementation 'org.aspectj:aspectjrt:1.9.4'
 
 }

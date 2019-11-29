@@ -18,17 +18,20 @@
             app:title_bg="@color/titleBg"/>
 
 
-       <com.example.studyandtestapp.CustomView.CircleView
-           android:layout_width="100dp"
-           android:layout_height="100dp"
-           android:layout_gravity="center"
-           app:circleColor="@color/colorAccent"/>
+        <com.example.studyandtestapp.CustomView.HorizontalView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <com.example.studyandtestapp.CustomView.RectView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="100dp"
-            android:layout_gravity="center"
-            android:padding="10dp"/>
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/lv_one"/>
+            <ListView
+                android:id="@+id/lv_two"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+
+        </com.example.studyandtestapp.CustomView.HorizontalView>
 
 </LinearLayout>

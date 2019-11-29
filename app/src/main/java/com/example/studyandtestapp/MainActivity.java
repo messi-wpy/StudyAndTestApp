@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,13 +50,26 @@ public class MainActivity extends AppCompatActivity {
     private final static String TAG = "Main";
     private MovableView movableView;
     private GetScorsePresenter scorsePresenter;
+    private ListView one;
+    private ListView two;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.acitivty_view_test);
-
-
-
+         one=findViewById(R.id.lv_one);
+         two=findViewById(R.id.lv_two);
+        String[]strs1=new String[15];
+        String[]strs2=new String[15];
+        for (int i = 0; i <strs1.length ; i++) {
+            strs1[i]=String.valueOf(i+1);
+        }
+        for (int i = 0; i <strs1.length ; i++) {
+            strs2[i]=String.valueOf((char)( 'a'+i));
+        }
+        ArrayAdapter<String> adapter1=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,strs1);
+        one.setAdapter(adapter1);
+        ArrayAdapter<String>adapter2=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,strs2);
+        two.setAdapter(adapter2);
 /*
         if (scorsePresenter==null)
             scorsePresenter=new GetScorsePresenter();
