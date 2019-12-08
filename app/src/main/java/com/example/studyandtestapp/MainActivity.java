@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -20,6 +22,8 @@ import com.example.ccnuscores.GetScorsePresenter;
 import com.example.studyandtestapp.CustomView.ItemLinearLayout;
 import com.example.studyandtestapp.CustomView.LargeImageView;
 import com.example.studyandtestapp.CustomView.MovableView;
+import com.example.studyandtestapp.Net.AsyncTest;
+import com.example.studyandtestapp.Net.LooperThread;
 import com.example.studyandtestapp.data.Score;
 import com.example.studyandtestapp.fragment.Mainfragment;
 import com.example.studyandtestapp.largeImage.LargeImageViewActivity;
@@ -56,63 +60,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.acitivty_view_test);
-         one=findViewById(R.id.lv_one);
-         two=findViewById(R.id.lv_two);
-        String[]strs1=new String[15];
-        String[]strs2=new String[15];
-        for (int i = 0; i <strs1.length ; i++) {
-            strs1[i]=String.valueOf(i+1);
-        }
-        for (int i = 0; i <strs1.length ; i++) {
-            strs2[i]=String.valueOf((char)( 'a'+i));
-        }
-        ArrayAdapter<String> adapter1=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,strs1);
-        one.setAdapter(adapter1);
-        ArrayAdapter<String>adapter2=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,strs2);
-        two.setAdapter(adapter2);
-/*
-        if (scorsePresenter==null)
-            scorsePresenter=new GetScorsePresenter();
-        //if (!scorsePresenter.isLogined())
-         //   scorsePresenter.LoginJWC();
-        movableView.setOnClickListener(v -> {
-            Log.i(TAG, "onCreate: onclick");
-          scorsePresenter.getScores(new Subscriber<ResponseBody>() {
-              @Override
-              public void onCompleted() {
-                  Log.i(TAG, "onCompleted: getscores");
-
-              }
-
-              @Override
-              public void onError(Throwable e) {
-                  Log.e(TAG, "onError: getscores error");
-                  if (e instanceof HttpException){
-                      Log.e(TAG, "onError: HttpException "+((HttpException)e).response().code());
-
-                  }
-
-              }
-
-              @Override
-              public void onNext(ResponseBody responseBody) {
-                  Log.i(TAG, "onNext: get");
-                  scorsePresenter.addTime();
-                  try {
-                     List<Score> list=getScoreFromJson(responseBody.string());
-                      for (int i = 0; i <list.size() ; i++) {
-                          Log.i(TAG, "onNext: "+list.get(i).course+list.get(i).grade);
-                      }
-                  } catch (JSONException e) {
-                      e.printStackTrace();
-                  } catch (IOException e) {
-                      e.printStackTrace();
-                  }
-              }
-          });
-
-        });
-*/
 
     }
     public @Nullable
