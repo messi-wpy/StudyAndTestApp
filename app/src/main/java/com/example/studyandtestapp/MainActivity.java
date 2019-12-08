@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -22,6 +23,7 @@ import com.example.ccnuscores.GetScorsePresenter;
 import com.example.studyandtestapp.CustomView.ItemLinearLayout;
 import com.example.studyandtestapp.CustomView.LargeImageView;
 import com.example.studyandtestapp.CustomView.MovableView;
+import com.example.studyandtestapp.CustomView.TitleBar;
 import com.example.studyandtestapp.Net.AsyncTest;
 import com.example.studyandtestapp.Net.LooperThread;
 import com.example.studyandtestapp.data.Score;
@@ -60,6 +62,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.acitivty_view_test);
+        TitleBar titleBar=findViewById(R.id.titlebar);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+               AsyncTest test=new AsyncTest();
+               test.execute("aaa");
+            }
+        }).start();
+
 
     }
     public @Nullable
